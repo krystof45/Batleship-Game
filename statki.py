@@ -29,6 +29,12 @@ class Gui():
                 li2={}
                 global posibilyty2
                 posibilyty2=[]
+                global all_map_enemy
+                all_map_enemy=[]
+                global hitted
+                hitted=False
+                global shoot_first
+                shoot_first=0
                 for x in range(map_size):
                         for y in range(map_size):
                                 if x==0 or y==0 or y==11 or x==11:
@@ -39,6 +45,9 @@ class Gui():
                                     li2[(x,y)]=1
                                     posibilyty.append((x,y))
                                     posibilyty2.append((x,y))
+                                    all_map_enemy.append((x,y))
+                                    
+                                    
                 
                 
                 self.root=root
@@ -63,7 +72,7 @@ class Gui():
                 frame.grid(row=0,column=0, sticky="n")
                 Button0=Button(frame,text="New Game",command=lambda:self.new_game(ship_list)).grid(row = 0,column = 1, sticky = "nw")
                 
-                label2=Label(frame, text="Coordinates").grid(row=1,column=0, sticky="w")
+                label2=Label(frame, text="Coordinates(xnum)").grid(row=1,column=0, sticky="w")
                 entry = tk.Entry(frame)
                 entry.grid(row = 1,column = 1)
                 Button1=Button(frame,text="Shoot",command=lambda:self.shoot(entry.get())).grid(row = 3,column = 1, sticky = "we")
@@ -137,6 +146,8 @@ class Gui():
                 cor_y=int(cor[-1])
                 x_cor=index_rev[cor_x]
                 actual_ship=[]
+                global my_shp
+                my_shp=[]
                 for x in range(sh_len):
                         if orient.get()==0:
                                 #li[(index_rev[cor_x],cor_y)]=2
@@ -173,7 +184,9 @@ class Gui():
                                 posibilyty.discard((x[0]+1,x[1]-1))
                                 posibilyty.discard((x[0]-1,x[1]+1))
                                 posibilyty=list(posibilyty)
-                        ship_list.remove(sh)        
+                        ship_list.remove(sh)
+                        my_shp.append(actual_ship)
+                        print(my_shp)
                         for x in li:
                                 color=['white','grey','green']
                                 x_square = x[1] * square_size
@@ -207,6 +220,8 @@ class Gui():
                 global posibilyty2
                 orintation=int()
                 start=()
+                global enemy_ships
+                enemy_ships=[]
                 for x in ship_list2:
                         orintation=random.randint(0, 1)
                         chosen=True
@@ -248,7 +263,9 @@ class Gui():
                                 posibilyty2.discard((z[0]+1,z[1]-1))
                                 posibilyty2.discard((z[0]-1,z[1]+1))
                                 posibilyty2=list(posibilyty2)
-                                '''
+                        enemy_ships.append(act_sh)
+                        
+                        #'''
                         for a in li2:
                                 color=['white','grey','green']
                                 x_square = a[1] * square_size
@@ -263,13 +280,213 @@ class Gui():
                                 self.move=(t*square_size)+(square_size/2)
                                 self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                 self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
-                                '''
-
-        
-                                
+                        #'''               
         def shoot(self,coordinates):
-                print(coordinates)
-                
+                cor_x=index_rev[coordinates[0]]
+                cor_y=int(coordinates[-1])
+                coord=(cor_x,cor_y)
+                window2 = tk.Toplevel()
+                hit=False
+                global hited_cor
+                hited_cor=[]
+                for each_sh in enemy_ships:
+                        if coord in each_sh:
+                                if li2[coord]==2 and len(each_sh)==1:
+                                        li2[coord]=3
+                                        for a in li2:
+                                                color=['white','grey','green','red','blue']
+                                                x_square = a[1] * square_size
+                                                y_square = a[0] * square_size
+                                                figure2=self.canvas2.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li2[a]], outline='gray5')
+                                        for t in index:
+                                                self.move=(t*square_size)+(square_size/2)
+                                                self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
+                                                
+                                        enemy_ships.remove(each_sh)
+                                        if len(enemy_ships)==0:
+                                                masage = tk.Label(window2, text="You Won, congratulations").grid(row=0,column=0)
+                                                button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
+                                                button.grid(row=1,column=0)
+                                        else:
+                                                '''for x in hited_cor:
+                                                        if li2[(x[0]+1,x[1])]!=3 and li2[(x[0]+1,x[1])]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0]-1,x[1])]!=3 and li2[(x[0]-1,x[1])]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0],x[1]+1)]!=3 and li2[(x[0],x[1]+1)]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0],x[1]-1)]!=3 and li2[(x[0],x[1]-1)]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0]+1,x[1]+1)]!=3 and li2[(x[0]+1,x[1]+1)]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0]-1,x[1]-1)]!=3 and li2[(x[0]-1,x[1]-1)]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0]+1,x[1]-1)]!=3 and li2[(x[0]+1,x[1]-1)]!=1:
+                                                                li2[coord]=4
+                                                        if li2[(x[0]-1,x[1]+1)]!=3 and li2[(x[0]-1,x[1]+1)]!=1:
+                                                                li2[coord]=4
+                                                for a in li2:
+                                                        color=['white','grey','green','red','blue']
+                                                        x_square = a[1] * square_size
+                                                        y_square = a[0] * square_size
+                                                        figure2=self.canvas2.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li2[a]], outline='gray5')
+                                                for t in index:
+                                                        self.move=(t*square_size)+(square_size/2)
+                                                        self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                        self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")                 
+                                                '''
+                                                masage = tk.Label(window2, text="Ship was hit ant sunken").grid(row=0,column=0)
+                                                button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
+                                                button.grid(row=1,column=0)
+                                                
+
+                                elif li2[coord]==2 and len(each_sh)!=1:
+                                        each_sh.remove(coord)
+                                        hited_cor.append(coord)
+                                        
+                                        li2[coord]=3
+                                        for a in li2:
+                                                color=['white','grey','green','red','blue']
+                                                x_square = a[1] * square_size
+                                                y_square = a[0] * square_size
+                                                figure2=self.canvas2.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li2[a]], outline='gray5')
+                                        for t in index:
+                                                self.move=(t*square_size)+(square_size/2)
+                                                self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
+                                        masage = tk.Label(window2, text="Ship was hit").grid(row=0,column=0)
+                                        button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
+                                        button.grid(row=1,column=0)
+                                hit=True
+                                break
+
+                        else:
+                                pass
+                                
+                if hit==False:
+                        li2[coord]=4
+                        for a in li2:
+                                                color=['white','grey','green','red','blue']
+                                                x_square = a[1] * square_size
+                                                y_square = a[0] * square_size
+                                                figure2=self.canvas2.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li2[a]], outline='gray5')
+                        for t in index:
+                                                self.move=(t*square_size)+(square_size/2)
+                                                self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
+                        masage = tk.Label(window2, text="Ship was missed").grid(row=0,column=0)
+                        button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
+                        button.grid(row=1,column=0)
+
+        def enemy_shoot(self):
+                window2 = tk.Toplevel()
+                if hitted==True:
+                        lista mozliwosci wybierz jesden jak trafisz usun boczne dodaj choryzonyalne jak nie prubuj kolejny 
+                        while blank:
+                                if li[shoot_first[0]+1,shoot_first[1]]==1:   
+                                        
+                        next_shot
+                        if li[shoot_first[0]+1,shoot_first[1]]==1:
+                                
+                        up jak nie
+                        down
+                        
+                else:
+                        shoot_first=random.choice(all_map_enemy)
+                        if li[shoot_first]==2:
+                                all_map_enemy.remove(shoot_first)
+                        
+                                hitted=True
+                                li[shoot_first]=3
+                                for a in li:
+                                                color=['white','grey','green','red','blue']
+                                                x_square = a[1] * square_size
+                                                y_square = a[0] * square_size
+                                                figure=self.canvas.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li[a]], outline='gray5')
+                                for t in index:
+                                                self.move=(t*square_size)+(square_size/2)
+                                                self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
+
+                                masage = tk.Label(window2, text="Enemy hit you").grid(row=0,column=0)
+                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                button.grid(row=1,column=0)
+                        else:
+                                all_map_enemy.remove(shoot_first)
+                                hitted=False
+                                li[shoot_first]=4
+                                for a in li:
+                                                color=['white','grey','green','red','blue']
+                                                x_square = a[1] * square_size
+                                                y_square = a[0] * square_size
+                                                figure=self.canvas.create_rectangle(
+                                                                        y_square,
+                                                                        x_square,
+                                                                        y_square + square_size,
+                                                                        x_square + square_size,
+                                                                        fill=color[li[a]], outline='gray5')
+                                for t in index:
+                                                self.move=(t*square_size)+(square_size/2)
+                                                self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                                self.canvas.create_text((square_size/2), self.move, text=t, fill="black") 
+                                masage = tk.Label(window2, text="Enemy miss you").grid(row=0,column=0)
+                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                button.grid(row=1,column=0)
+                                
+'''
+                for x in :
+                        orintation=random.randint(0, 1)
+                        chosen=True
+                        while chosen:
+                                start=random.choice(posibilyty2)
+                                act_sh=[]
+                                cor_y=start[1]
+                                cor_x=start[0]
+                                for y in range(int(x[-1])):
+                                        if orintation==0:
+                                                act_sh.append((cor_x,cor_y))
+                                                cor_y+=1
+                                        else:
+                                                act_sh.append((cor_x,cor_y))
+                                                cor_x+=1
+                                for z in act_sh:
+                                        if z in posibilyty2:
+                                                correct=True
+                                        else:
+                                                correct=False
+                                                break
+                                if correct==True:
+                                        chosen=False
+                                        break
+                                else:
+                                        chosen=True
+'''
 if __name__== '__main__':
     root=tk.Tk()
     gui=Gui(root)
