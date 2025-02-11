@@ -4,7 +4,7 @@ from tkinter import ttk
 import random
 
 
-
+random.seed(10)
 
 
 
@@ -13,8 +13,8 @@ class Gui():
         
         def __init__(self, root):
                 global ship_list
-                #ship_list=['ship1-lenght4','ship1-lenght3']
-                ship_list=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
+                ship_list=['ship1-lenght4']#,'ship1-lenght3']
+                #ship_list=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
                 global ship_list2
                 ship_list2=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
                 global map_size
@@ -43,6 +43,8 @@ class Gui():
                 hit_iter=0
                 global last_hit
                 last_hit=0
+                global broken
+                broken=[]
                 for x in range(map_size):
                         for y in range(map_size):
                                 if x==0 or y==0 or y==11 or x==11:
@@ -145,13 +147,25 @@ class Gui():
                 button_close = tk.Button(window, text="Add ship",command=lambda:[self.add_ship(combobox,name,var),window.destroy()])
                 button_close.grid(row=8,column=0)
         def add_ship(self,what_ship,coord,orient):
+                
+                window2 = tk.Toplevel()        
                 pos=6
                 sh=what_ship.get()
                 sh_len=sh[-1]
                 sh_len=int(sh_len)
                 cor=coord.get()
                 cor_x=cor[0]
-                cor_y=int(cor[-1])
+                cor_y=int(cor[1:])
+                if len(coord.get())>3:
+                        masage = tk.Label(window2, text="You give vrong coordinates, please try again").grid(row=0,column=0)
+                        button = tk.Button(window2, text="try again",command=lambda:[self.new_game(ship_list),window2.destroy()])
+                        button.grid(row=1,column=0)
+
+                if not type(cor[1:]) is int:
+                        masage = tk.Label(window2, text="You give vrong coordinates, please try again").grid(row=0,column=0)
+                        button = tk.Button(window2, text="try again",command=lambda:[self.new_game(ship_list),window2.destroy()])
+                        button.grid(row=1,column=0)
+                
                 x_cor=index_rev[cor_x]
                 actual_ship=[]
                 for x in range(sh_len):
@@ -163,7 +177,6 @@ class Gui():
                                 #li[(x_cor,cor_y)]=2
                                 actual_ship.append((int(x_cor),int(cor_y)))
                                 x_cor+=1
-                window2 = tk.Toplevel()
                 
                 for x in actual_ship:
                         global posibilyty
@@ -292,7 +305,7 @@ class Gui():
         def shoot(self,coordinates):
                 #shoting enemy ships and testing if its shunken
                 cor_x=index_rev[coordinates[0]]
-                cor_y=int(coordinates[-1])
+                cor_y=int(coordinates[1:])
                 coord=(cor_x,cor_y)
                 window2 = tk.Toplevel()
                 hit=False
@@ -303,7 +316,7 @@ class Gui():
                                 if li2[coord]==2 and len(each_sh)==1:
                                         li2[coord]=3
                                         for a in li2:
-                                                color=['white','grey','green','red','blue']
+                                                color=['white','grey','grey','red','blue']
                                                 x_square = a[1] * square_size
                                                 y_square = a[0] * square_size
                                                 figure2=self.canvas2.create_rectangle(
@@ -321,7 +334,7 @@ class Gui():
                                         if len(enemy_ships)==0:
                                                 masage = tk.Label(window2, text="You Won, congratulations").grid(row=0,column=0)
                                                 button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
-                                                button.grid(row=1,column=0)
+                                                button.grid(row=2,column=0)
                                         else:
                                                 '''for x in hited_cor:
                                                         if li2[(x[0]+1,x[1])]!=3 and li2[(x[0]+1,x[1])]!=1:
@@ -356,8 +369,8 @@ class Gui():
                                                         self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")                 
                                                 '''
                                                 masage = tk.Label(window2, text="Ship was hit ant sunken").grid(row=0,column=0)
-                                                button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
-                                                button.grid(row=1,column=0)
+                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                                button.grid(row=2,column=0)
                                                 
 
                                 elif li2[coord]==2 and len(each_sh)!=1:
@@ -366,7 +379,7 @@ class Gui():
                                         
                                         li2[coord]=3
                                         for a in li2:
-                                                color=['white','grey','green','red','blue']
+                                                color=['white','grey','grey','red','blue']
                                                 x_square = a[1] * square_size
                                                 y_square = a[0] * square_size
                                                 figure2=self.canvas2.create_rectangle(
@@ -380,8 +393,8 @@ class Gui():
                                                 self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
                                         masage = tk.Label(window2, text="Ship was hit").grid(row=0,column=0)
-                                        button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
-                                        button.grid(row=1,column=0)
+                                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                        button.grid(row=2,column=0)
                                 hit=True
                                 break
 
@@ -391,7 +404,7 @@ class Gui():
                 if hit==False:
                         li2[coord]=4
                         for a in li2:
-                                                color=['white','grey','green','red','blue']
+                                                color=['white','grey','grey','red','blue']
                                                 x_square = a[1] * square_size
                                                 y_square = a[0] * square_size
                                                 figure2=self.canvas2.create_rectangle(
@@ -405,114 +418,97 @@ class Gui():
                                                 self.canvas2.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
                         masage = tk.Label(window2, text="Ship was missed").grid(row=0,column=0)
-                        button = tk.Button(window2, text="Enemy turn",command=lambda:[self.enemy_shoot(),window2.destroy()])
-                        button.grid(row=1,column=0)
+                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                        button.grid(row=2,column=0)
 
-        def enemy_shoot(self):
-                window2 = tk.Toplevel()
                 global hitted
                 global hit_list
                 global hit_iter
-                if hitted==True:
+                global shoot_first
+                global last_hit
+                global broken
+                if hitted:
                         point=random.choice(hit_list)
-                        
                         for shi in my_shp:
-                                if point in shi and len(shi)!=1:
-                                        if hit_iter==0:
-                                                if point[0]<shoot_first[0]and (point[0]>1 or point[0]<10): 
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]+1))
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]-1))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0]-1,point[1]))
-                                                if point[0]>shoot_first[0]and (point[0]>1 or point[0]<10): 
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]+1))
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]-1))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0]+1,point[1]))
+                                if point in shi:
+                                        hit_list.remove(point)
+                                        broken.append(point)
+                                        if len(shi)>1:
+                                                if hit_iter==0:
+                                                        if point[0] < shoot_first[0]:
+                                                                if (point[0]-1, point[1]+1) in hit_list:
+                                                                        hit_list.remove((point[0]-1, point[1]+1))
+                                                                if (point[0]+1, point[1]+1) in hit_list:
+                                                                        hit_list.remove((point[0]+1, point[1]+1))
+                                                                if point[0]==1 and (point[0]+2, point[1]) not in hit_list: 
+                                                                        hit_list.append((point[0]+2, point[1]))
+                                                                else:
+                                                                        hit_list.append((point[0] - 1, point[1]))
+                                                        elif point[0] > shoot_first[0]:
+                                                                if (point[0]+1, point[1]-1) in hit_list:
+                                                                        hit_list.remove((point[0]+1, point[1]-1))
+                                                                if (point[0]-1, point[1]-1) in hit_list:
+                                                                        hit_list.remove((point[0]-1, point[1]-1))
+                                                                if point[0]==10 and (point[0]-2, point[1]) not in hit_list:
+                                                                        hit_list.append((point[0]-2, point[1]))
+                                                                else:
+                                                                        hit_list.append((point[0] + 1, point[1]))
+                                                        elif point[1] > shoot_first[1]:
+                                                                if (point[0]-1, point[1]-1) in hit_list:
+                                                                        hit_list.remove((point[0]-1, point[1]-1))
+                                                                if (point[0]-1, point[1]+1) in hit_list:
+                                                                        hit_list.remove((point[0]-1, point[1]+1))
+                                                                if point[1]==10 and (point[0], point[1]-2) not in hit_list:
+                                                                        hit_list.append((point[0], point[1]-2))
+                                                                else:
+                                                                        hit_list.append((point[0], point[1] + 1))
 
-                                                elif point[1]>shoot_first[1]and (point[1]>1 or point[1]<10): 
-                                                        hit_list.remove((shoot_first[0]+1,shoot_first[1]))
-                                                        hit_list.remove((shoot_first[0]-1,shoot_first[1]))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0],point[1]+1))
-                                                        
-                                                elif point[1]<shoot_first[1]and (point[1]>1 or point[1]<10): 
-                                                        hit_list.remove((shoot_first[0]+1,shoot_first[1]))
-                                                        hit_list.remove((shoot_first[0]-1,shoot_first[1]))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0],point[1]-1))
-                                                elif (point[1]<shoot_first[1]or point[1]>shoot_first[1])and (point[1]==1 or point[1]==10):
-                                                        hit_list.remove((shoot_first[0]+1,shoot_first[1]))
-                                                        hit_list.remove((shoot_first[0]-1,shoot_first[1]))
-                                                        hit_list.remove(point)
-                                                elif (point[0]<shoot_first[0]or point[0]>shoot_first[0])and (point[0]==1 or point[0]==10):
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]+1))
-                                                        hit_list.remove((shoot_first[0],shoot_first[1]-1))
-                                                        hit_list.remove(point)
-                                                hit_iter+=1
-                                                last_hit=point
+                                                        elif point[1] < shoot_first[1]:
+                                                                if (point[0]+1, point[1]-1) in hit_list:
+                                                                        hit_list.remove((point[0]+1, point[1]-1))
+                                                                if (point[0]+1, point[1]+1) in hit_list:
+                                                                        hit_list.remove((point[0]+1, point[1]+1))
+                                                                if point[1]==1 and (point[0], point[1]+2) not in hit_list: 
+                                                                        hit_list.append((point[0], point[1]+2))
+                                                                else:
+                                                                        hit_list.append((point[0], point[1] - 1))
+                                                        hit_iter += 1
                                                 
                                                         
+                                                else:
+                                                        if point[0] < last_hit[0] and point[0]!=1 :
+                                                                hit_list.append((point[0] - 1, point[1]))
+                                                        elif point[0] > last_hit[0]and  point[0]!=10:
+                                                                hit_list.append((point[0] + 1, point[1]))
+                                                        elif point[1] > last_hit[1]and  point[1]!=10:
+                                                                hit_list.append((point[0], point[1] + 1))
+                                                        elif point[1] < last_hit[1]and  point[1]!=1:
+                                                                hit_list.append((point[0], point[1] - 1))
+                                                        hit_iter += 1
+                                                print(hit_list)
+                                                last_hit = point
+                                                shi.remove(point)
+                                                
+                                                masage = tk.Label(window2, text="Enemy hit you").grid(row=1,column=0)
+                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                                button.grid(row=2,column=0)
+
                                         else:
-                                                if point[0]<last_hit[0]and (point[0]>1 or point[0]<10): 
-                                                        hit_list.remove((last_hit[0],last_hit[1]+1))
-                                                        hit_list.remove((last_hit[0],last_hit[1]-1))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0]-1,point[1]))
-                                                if point[0]>last_hit[0]and (point[0]>1 or point[0]<10): 
-                                                        hit_list.remove((last_hit[0],last_hit[1]+1))
-                                                        hit_list.remove((last_hit[0],last_hit[1]-1))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0]+1,point[1]))
-
-                                                elif point[1]>last_hit[1]and (point[1]>1 or point[1]<10): 
-                                                        hit_list.remove((last_hit[0]+1,last_hit[1]))
-                                                        hit_list.remove((last_hit[0]-1,last_hit[1]))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0],point[1]+1))
-                                                        
-                                                elif point[1]<last_hit[1]and (point[1]>1 or point[1]<10): 
-                                                        hit_list.remove((last_hit[0]+1,last_hit[1]))
-                                                        hit_list.remove((last_hit[0]-1,last_hit[1]))
-                                                        hit_list.remove(point)
-                                                        hit_list.append((point[0],point[1]-1))
-                                                elif (point[1]<last_hit[1]or point[1]>last_hit[1])and (point[1]==1 or point[1]==10):
-                                                        hit_list.remove((last_hit[0]+1,last_hit[1]))
-                                                        hit_list.remove((last_hit[0]-1,last_hit[1]))
-                                                        hit_list.remove(point)
-                                                elif (point[0]<last_hit[0]or point[0]>last_hit[0])and (point[0]==1 or point[0]==10):
-                                                        hit_list.remove((last_hit[0],last_hit[1]+1))
-                                                        hit_list.remove((last_hit[0],last_hit[1]-1))
-                                                        hit_list.remove(point)
-                                                hit_iter+=1
-                                                last_hit=point
-                                        li[point]=3
-                                        shi.remove(point)
-                                        for a in li:
-                                                color=['white','grey','green','red','blue']
-                                                x_square = a[1] * square_size
-                                                y_square = a[0] * square_size
-                                                figure=self.canvas.create_rectangle(
-                                                                        y_square,
-                                                                        x_square,
-                                                                        y_square + square_size,
-                                                                        x_square + square_size,
-                                                                        fill=color[li[a]], outline='gray5')
-                                        for t in index:
-                                                self.move=(t*square_size)+(square_size/2)
-                                                self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
-                                                self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
-
                                         
-                                        masage = tk.Label(window2, text="Enemy hit you").grid(row=0,column=0)
-                                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                        button.grid(row=1,column=0)
-
-                                elif point in shi and len(shi)==1:
-                                        my_shp.remove(shi)
-                                        hit_list.clear()
+                                                my_shp.remove(shi)
+                                                hit_list.clear()
+                                                hit_iter=0
+                                                hitted=False
+                                                '''#usuawanie otoczenia
+                                                for each in broken:
+                                                        if li[(each[0]+dx,each[1]+dy)for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]!=
+                                                        li[]=4
+                                                '''
+                                                masage = tk.Label(window2, text="Enemy hit you and shunken").grid(row=1,column=0)
+                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                                button.grid(row=2,column=0)
                                         li[point]=3
-                                        hitted=False
+
                                         for a in li:
                                                 color=['white','grey','green','red','blue']
                                                 x_square = a[1] * square_size
@@ -527,20 +523,19 @@ class Gui():
                                                 self.move=(t*square_size)+(square_size/2)
                                                 self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
-                                        if len(my_shp==0):
-                                                masage = tk.Label(window2, text="Enemy win the game").grid(row=0,column=0)
-                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                                button.grid(row=1,column=0)
-                                        else:
-                                                masage = tk.Label(window2, text="Enemy hit you and shunken").grid(row=0,column=0)
-                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                                button.grid(row=1,column=0)
-                                else:
-                                        pass        
+                                        if len(my_shp)==0:
+                                                masage = tk.Label(window2, text="Enemy win the game").grid(row=1,column=0)
+                                                button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
+                                                button.grid(row=2,column=0)
+                                        
 
-                        hit_list.remove(point)
-                        li[point]=4
-                        for a in li:
+                                else:
+                                        
+                                        li[point]=4
+                                        if point in hit_list:
+                                                hit_list.remove(point)
+                        
+                                        for a in li:
                                                 color=['white','grey','green','red','blue']
                                                 x_square = a[1] * square_size
                                                 y_square = a[0] * square_size
@@ -550,59 +545,27 @@ class Gui():
                                                                         y_square + square_size,
                                                                         x_square + square_size,
                                                                         fill=color[li[a]], outline='gray5')
-                        for t in index:
+                                        for t in index:
                                                 self.move=(t*square_size)+(square_size/2)
                                                 self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
-                        masage = tk.Label(window2, text="Enemy missed you").grid(row=0,column=0)
-                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                        button.grid(row=1,column=0)
+                                        masage = tk.Label(window2, text="Enemy missed you").grid(row=1,column=0)
+                                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                        button.grid(row=2,column=0)
                                         
                        
                         
                 else:
-                        shoot_first=random.choice(all_map_enemy)
                         
+                        shoot_first=random.choice(all_map_enemy)
+                        all_map_enemy.remove(shoot_first)
                         if li[shoot_first]==2:
-                                all_map_enemy.remove(shoot_first)
                         
                                 hitted=True
                                 hit_iter=0
-                                if shoot_first[0]==1 and (shoot_first[1]!=1 or shoot_first[1]!=10):
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-                                elif shoot_first[1]==1 and (shoot_first[0]!=1 or shoot_first[0]!=10):
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                elif shoot_first[0]==10 and (shoot_first[1]!=1 or shoot_first[1]!=10):
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-                                elif shoot_first[1]==10 and (shoot_first[0]!=1 or shoot_first[0]!=10):
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                elif shoot_first[0]==1 and shoot_first[1]==1:
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                elif shoot_first[0]==1 and shoot_first[1]==10:
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-                                elif shoot_first[0]==10 and shoot_first[1]==1:
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                elif shoot_first[0]==10 and shoot_first[1]==10:
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-                                else:
-                                        hit_list.append((shoot_first[0]+1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0]-1,shoot_first[1]))
-                                        hit_list.append((shoot_first[0],shoot_first[1]+1))
-                                        hit_list.append((shoot_first[0],shoot_first[1]-1))
-
-                                
+                                broken.append(shoot_first)
+                                neighbors = [(shoot_first[0] + dx, shoot_first[1] + dy) for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]
+                                hit_list=[n for n in neighbors if 0 < n[0] < 11 and 0 < n[1] < 11]
                                 li[shoot_first]=3
                                 for a in li:
                                                 color=['white','grey','green','red','blue']
@@ -619,11 +582,10 @@ class Gui():
                                                 self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
 
-                                masage = tk.Label(window2, text="Enemy hit you").grid(row=0,column=0)
+                                masage = tk.Label(window2, text="Enemy hit you").grid(row=1,column=0)
                                 button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                button.grid(row=1,column=0)
+                                button.grid(row=2,column=0)
                         else:
-                                all_map_enemy.remove(shoot_first)
                                 hitted=False
                                 li[shoot_first]=4
                                 for a in li:
@@ -640,9 +602,9 @@ class Gui():
                                                 self.move=(t*square_size)+(square_size/2)
                                                 self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
                                                 self.canvas.create_text((square_size/2), self.move, text=t, fill="black") 
-                                masage = tk.Label(window2, text="Enemy missed you").grid(row=0,column=0)
+                                masage = tk.Label(window2, text="Enemy missed you").grid(row=1,column=0)
                                 button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                button.grid(row=1,column=0)
+                                button.grid(row=2,column=0)
                                 
 
 if __name__== '__main__':
