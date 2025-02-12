@@ -3,10 +3,10 @@
 This repository contains a fully implemented Battleship game, written entirely in Python. The game features an interactive **graphical user interface (GUI) using Tkinter**, allowing players to place ships, take turns shooting, and compete against an AI opponent.  
 
 ## 📁 Folder Structure  
-- `game/` – Contains the game files:  
+- `disc/` – Contains the game files:  
   - **`.exe`** – Precompiled executable version of the game for Windows.  
-  - **`.py`** – Source code of the game in Python.  
-  - **`README.md`** – Instructions for running and playing the game.  
+- **`.py`** – Source code of the game in Python.  
+- **`README.md`** – Instructions for running and playing the game.  
 
 ## 🛠 Installation & Usage  
 ### Running the Python Version  
