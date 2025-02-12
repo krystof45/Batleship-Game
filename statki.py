@@ -12,22 +12,22 @@ class Gui():
         
         def __init__(self, root):
                 global ship_list
-                #ship_list=['ship1-lenght4']#,'ship1-lenght3']
-                ship_list=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
+                #ship_list=['ship1-length4']#,'ship1-length3']
+                ship_list=['ship1-length4','ship1-length3','ship2-length3','ship1-length2','ship2-length2','ship3-length2']
                 global ship_list2
-                ship_list2=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
+                ship_list2=['ship1-length4','ship1-length3','ship2-length3','ship1-length2','ship2-length2','ship3-length2']
                 global map_size
                 map_size = 12
                 global square_size
                 square_size=25
                 global li
                 li={}
-                global posibilyty
-                posibilyty=[]
+                global  possibility
+                possibility=[]
                 global li2
                 li2={}
-                global posibilyty2
-                posibilyty2=[]
+                global possibility2
+                possibility2=[]
                 global all_map_enemy
                 all_map_enemy=[]
                 global hitted
@@ -54,8 +54,8 @@ class Gui():
                                 else:
                                     li[(x,y)]=1
                                     li2[(x,y)]=1
-                                    posibilyty.append((x,y))
-                                    posibilyty2.append((x,y))
+                                    possibility.append((x,y))
+                                    possibility2.append((x,y))
                                     all_map_enemy.append((x,y))
                                     
                                     
@@ -158,12 +158,12 @@ class Gui():
                 cor_x=cor[0]
                 cor_y=int(cor[1:])
                 if len(coord.get())>3:
-                        masage = tk.Label(window2, text="You give vrong coordinates, please try again").grid(row=0,column=0)
+                        masage = tk.Label(window2, text="You give wrong coordinates, please try again").grid(row=0,column=0)
                         button = tk.Button(window2, text="try again",command=lambda:[self.new_game(ship_list),window2.destroy()])
                         button.grid(row=1,column=0)
 
                 if not type(cor[1:]) is int:
-                        masage = tk.Label(window2, text="You give vrong coordinates, please try again").grid(row=0,column=0)
+                        masage = tk.Label(window2, text="You give wrong coordinates, please try again").grid(row=0,column=0)
                         button = tk.Button(window2, text="try again",command=lambda:[self.new_game(ship_list),window2.destroy()])
                         button.grid(row=1,column=0)
                 
@@ -180,8 +180,8 @@ class Gui():
                                 x_cor+=1
                 
                 for x in actual_ship:
-                        global posibilyty
-                        if x in posibilyty:
+                        global possibility
+                        if x in possibility:
                                 correct=True
                         else:
                                 correct=False
@@ -193,17 +193,17 @@ class Gui():
                         #adding to bord
                         for x in actual_ship:
                                 li[x]=2
-                                posibilyty=set(posibilyty)
-                                posibilyty.discard(x)
-                                posibilyty.discard((x[0]+1,x[1]))
-                                posibilyty.discard((x[0]-1,x[1]))
-                                posibilyty.discard((x[0],x[1]+1))
-                                posibilyty.discard((x[0],x[1]-1))
-                                posibilyty.discard((x[0]+1,x[1]+1))
-                                posibilyty.discard((x[0]-1,x[1]-1))
-                                posibilyty.discard((x[0]+1,x[1]-1))
-                                posibilyty.discard((x[0]-1,x[1]+1))
-                                posibilyty=list(posibilyty)
+                                possibility=set(possibility)
+                                possibility.discard(x)
+                                possibility.discard((x[0]+1,x[1]))
+                                possibility.discard((x[0]-1,x[1]))
+                                possibility.discard((x[0],x[1]+1))
+                                possibility.discard((x[0],x[1]-1))
+                                possibility.discard((x[0]+1,x[1]+1))
+                                possibility.discard((x[0]-1,x[1]-1))
+                                possibility.discard((x[0]+1,x[1]-1))
+                                possibility.discard((x[0]-1,x[1]+1))
+                                possibility=list(possibility)
                         ship_list.remove(sh)
                         my_shp.append(actual_ship)
                         
@@ -237,7 +237,7 @@ class Gui():
                        
         def start_game(self):
                 global ship_list2
-                global posibilyty2
+                global possibility2
                 orintation=int()
                 start=()
                 global enemy_ships
@@ -247,7 +247,7 @@ class Gui():
                         orintation=random.randint(0, 1)
                         chosen=True
                         while chosen:
-                                start=random.choice(posibilyty2)
+                                start=random.choice(possibility2)
                                 act_sh=[]
                                 cor_y=start[1]
                                 cor_x=start[0]
@@ -259,7 +259,7 @@ class Gui():
                                                 act_sh.append((cor_x,cor_y))
                                                 cor_x+=1
                                 for z in act_sh:
-                                        if z in posibilyty2:
+                                        if z in possibility2:
                                                 correct=True
                                         else:
                                                 correct=False
@@ -273,17 +273,17 @@ class Gui():
                        
                         for z in act_sh:
                                 li2[z]=2
-                                posibilyty2=set(posibilyty2)
-                                posibilyty2.discard(z)
-                                posibilyty2.discard((z[0]+1,z[1]))
-                                posibilyty2.discard((z[0]-1,z[1]))
-                                posibilyty2.discard((z[0],z[1]+1))
-                                posibilyty2.discard((z[0],z[1]-1))
-                                posibilyty2.discard((z[0]+1,z[1]+1))
-                                posibilyty2.discard((z[0]-1,z[1]-1))
-                                posibilyty2.discard((z[0]+1,z[1]-1))
-                                posibilyty2.discard((z[0]-1,z[1]+1))
-                                posibilyty2=list(posibilyty2)
+                                possibility2=set(possibility2)
+                                possibility2.discard(z)
+                                possibility2.discard((z[0]+1,z[1]))
+                                possibility2.discard((z[0]-1,z[1]))
+                                possibility2.discard((z[0],z[1]+1))
+                                possibility2.discard((z[0],z[1]-1))
+                                possibility2.discard((z[0]+1,z[1]+1))
+                                possibility2.discard((z[0]-1,z[1]-1))
+                                possibility2.discard((z[0]+1,z[1]-1))
+                                possibility2.discard((z[0]-1,z[1]+1))
+                                possibility2=list(possibility2)
                         enemy_ships.append(act_sh)
                         
                         '''
@@ -304,7 +304,7 @@ class Gui():
                                 self.canvas2.create_text((square_size/2), self.move, text=t, fill="black")
                         '''               
         def shoot(self,coordinates):
-                #shoting enemy ships and testing if its shunken
+                #shoting enemy ships and testing if its sunken 
                         
                 cor_x=index_rev[coordinates[0]]
                 cor_y=int(coordinates[1:])
@@ -425,7 +425,7 @@ class Gui():
                         button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
                         button.grid(row=2,column=0)
                 if int(coordinates[1:])<1 or int(coordinates[1:])>10:
-                        masage = tk.Label(window2, text="You give vrong coordinates and lost turn").grid(row=0,column=0)
+                        masage = tk.Label(window2, text="You give wrong coordinates and lost turn").grid(row=0,column=0)
                         button = tk.Button(window2, text="Next turn",command=lambda:[root.destroy()])
                         button.grid(row=2,column=0)
                 global hitted
@@ -493,7 +493,7 @@ class Gui():
                                                                         button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
                                                                         button.grid(row=2,column=0)
                                                                 else:
-                                                                        masage = tk.Label(window2, text="Enemy hit you and shunken").grid(row=1,column=0)
+                                                                        masage = tk.Label(window2, text="Enemy hit you and sunken ").grid(row=1,column=0)
                                                                         button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
                                                                         button.grid(row=2,column=0)
                                                                 hit_list=[]
