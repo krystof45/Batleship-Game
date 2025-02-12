@@ -4,7 +4,6 @@ from tkinter import ttk
 import random
 
 
-random.seed(10)
 
 
 
@@ -13,8 +12,8 @@ class Gui():
         
         def __init__(self, root):
                 global ship_list
-                ship_list=['ship1-lenght4']#,'ship1-lenght3']
-                #ship_list=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
+                #ship_list=['ship1-lenght4']#,'ship1-lenght3']
+                ship_list=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
                 global ship_list2
                 ship_list2=['ship1-lenght4','ship1-lenght3','ship2-lenght3','ship1-lenght2','ship2-lenght2','ship3-lenght2']
                 global map_size
@@ -45,6 +44,8 @@ class Gui():
                 last_hit=0
                 global broken
                 broken=[]
+                global point
+                point=()
                 for x in range(map_size):
                         for y in range(map_size):
                                 if x==0 or y==0 or y==11 or x==11:
@@ -304,6 +305,7 @@ class Gui():
                         '''               
         def shoot(self,coordinates):
                 #shoting enemy ships and testing if its shunken
+                        
                 cor_x=index_rev[coordinates[0]]
                 cor_y=int(coordinates[1:])
                 coord=(cor_x,cor_y)
@@ -311,6 +313,7 @@ class Gui():
                 hit=False
                 global hited_cor
                 hited_cor=[]
+
                 for each_sh in enemy_ships:
                         if coord in each_sh:
                                 if li2[coord]==2 and len(each_sh)==1:
@@ -402,7 +405,8 @@ class Gui():
                                 pass
                                 
                 if hit==False:
-                        li2[coord]=4
+                        if li2[coord]!=0:
+                                li2[coord]=4
                         for a in li2:
                                                 color=['white','grey','grey','red','blue']
                                                 x_square = a[1] * square_size
@@ -420,141 +424,129 @@ class Gui():
                         masage = tk.Label(window2, text="Ship was missed").grid(row=0,column=0)
                         button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
                         button.grid(row=2,column=0)
-
+                if int(coordinates[1:])<1 or int(coordinates[1:])>10:
+                        masage = tk.Label(window2, text="You give vrong coordinates and lost turn").grid(row=0,column=0)
+                        button = tk.Button(window2, text="Next turn",command=lambda:[root.destroy()])
+                        button.grid(row=2,column=0)
                 global hitted
                 global hit_list
                 global hit_iter
                 global shoot_first
                 global last_hit
                 global broken
+                global point
                 if hitted:
+                        if hit_iter==0:
+                                last_hit=shoot_first
+                        else:
+                                last_hit=point
                         point=random.choice(hit_list)
-                        for shi in my_shp:
-                                if point in shi:
-                                        hit_list.remove(point)
-                                        broken.append(point)
-                                        if len(shi)>1:
-                                                if hit_iter==0:
-                                                        if point[0] < shoot_first[0]:
-                                                                if (point[0]-1, point[1]+1) in hit_list:
-                                                                        hit_list.remove((point[0]-1, point[1]+1))
-                                                                if (point[0]+1, point[1]+1) in hit_list:
-                                                                        hit_list.remove((point[0]+1, point[1]+1))
-                                                                if point[0]==1 and (point[0]+2, point[1]) not in hit_list: 
-                                                                        hit_list.append((point[0]+2, point[1]))
-                                                                else:
-                                                                        hit_list.append((point[0] - 1, point[1]))
-                                                        elif point[0] > shoot_first[0]:
-                                                                if (point[0]+1, point[1]-1) in hit_list:
-                                                                        hit_list.remove((point[0]+1, point[1]-1))
-                                                                if (point[0]-1, point[1]-1) in hit_list:
-                                                                        hit_list.remove((point[0]-1, point[1]-1))
-                                                                if point[0]==10 and (point[0]-2, point[1]) not in hit_list:
-                                                                        hit_list.append((point[0]-2, point[1]))
-                                                                else:
-                                                                        hit_list.append((point[0] + 1, point[1]))
-                                                        elif point[1] > shoot_first[1]:
-                                                                if (point[0]-1, point[1]-1) in hit_list:
-                                                                        hit_list.remove((point[0]-1, point[1]-1))
-                                                                if (point[0]-1, point[1]+1) in hit_list:
-                                                                        hit_list.remove((point[0]-1, point[1]+1))
-                                                                if point[1]==10 and (point[0], point[1]-2) not in hit_list:
-                                                                        hit_list.append((point[0], point[1]-2))
-                                                                else:
-                                                                        hit_list.append((point[0], point[1] + 1))
-
-                                                        elif point[1] < shoot_first[1]:
-                                                                if (point[0]+1, point[1]-1) in hit_list:
-                                                                        hit_list.remove((point[0]+1, point[1]-1))
-                                                                if (point[0]+1, point[1]+1) in hit_list:
-                                                                        hit_list.remove((point[0]+1, point[1]+1))
-                                                                if point[1]==1 and (point[0], point[1]+2) not in hit_list: 
-                                                                        hit_list.append((point[0], point[1]+2))
-                                                                else:
-                                                                        hit_list.append((point[0], point[1] - 1))
-                                                        hit_iter += 1
+                        hit_list.remove(point)
+                        all_map_enemy.remove(point)
+                        if li[point]==2:
+                                hit_iter+=1
+                                broken.append(point)
+                                li[point]=3
+                                
+                                if point[0] != last_hit[0] or point[1] != last_hit[1]:  
+                                        if (point[0]+1, point[1] + 1) in hit_list:
+                                                hit_list.remove((point[0]+1, point[1]+1))
+                                        if (point[0]-1, point[1] - 1) in hit_list:
+                                                hit_list.remove((point[0]-1, point[1]-1))
+                                        if (point[0]+1, point[1] - 1) in hit_list:
+                                                hit_list.remove((point[0]+1, point[1]-1))
+                                        if (point[0]-1, point[1] + 1) in hit_list:
+                                                hit_list.remove((point[0]-1, point[1]+1))
+                                if point[0] != last_hit[0]:
+                                        if (point[0]+1,point[1]) not in hit_list and (point[0]+1,point[1]) not in broken:
+                                                hit_list.append((point[0]+1,point[1]))
+                                        if (point[0]-1,point[1]) not in hit_list and (point[0]-1,point[1])not in broken:
+                                                hit_list.append((point[0]-1,point[1]))
+                                elif point[1] != last_hit[1]:
+                                        if (point[0],point[1]+1) not in hit_list and (point[0],point[1]+1) not in broken:
+                                                hit_list.append((point[0],point[1]+1))
+                                        if (point[0],point[1]-1) not in hit_list and (point[0],point[1]-1) not in broken:
+                                                hit_list.append((point[0],point[1]-1))
+                                if point[0]==1 and (point[0] - 1, point[1]) in hit_list:
+                                        hit_list.remove((point[0] - 1, point[1]))
+                                if point[0]==10 and (point[0] + 1, point[1]) in hit_list:
+                                        hit_list.remove((point[0] + 1, point[1]))
+                                if point[1]==1 and (point[0] , point[1]-1) in hit_list:
+                                        hit_list.remove((point[0] , point[1]-1))
+                                if point[1]==10 and (point[0] , point[1]+1) in hit_list:
+                                        hit_list.remove((point[0] , point[1]+1))
+                                
+                               
+                                
+                                
+                                for ship_num in range(len(my_shp)):
                                                 
+                                                if point in my_shp[ship_num]:
+                                                        ship=my_shp[ship_num]
+                                                        ship.remove(point)
+                                                        my_shp[ship_num]=ship
                                                         
-                                                else:
-                                                        if point[0] < last_hit[0] and point[0]!=1 :
-                                                                hit_list.append((point[0] - 1, point[1]))
-                                                        elif point[0] > last_hit[0]and  point[0]!=10:
-                                                                hit_list.append((point[0] + 1, point[1]))
-                                                        elif point[1] > last_hit[1]and  point[1]!=10:
-                                                                hit_list.append((point[0], point[1] + 1))
-                                                        elif point[1] < last_hit[1]and  point[1]!=1:
-                                                                hit_list.append((point[0], point[1] - 1))
-                                                        hit_iter += 1
-                                                print(hit_list)
-                                                last_hit = point
-                                                shi.remove(point)
+                                                        if len(my_shp[ship_num])==0:
+                                                                my_shp.remove(my_shp[ship_num])
+                                                                if len(my_shp)==0:
+                                                                        masage = tk.Label(window2, text="Enemy win the game").grid(row=1,column=0)
+                                                                        button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
+                                                                        button.grid(row=2,column=0)
+                                                                else:
+                                                                        masage = tk.Label(window2, text="Enemy hit you and shunken").grid(row=1,column=0)
+                                                                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                                                        button.grid(row=2,column=0)
+                                                                hit_list=[]
+                                                                hit_iter=0
+                                                                hitted=False
+                                                                for each in broken: 
+                                                                        for ax,ay in [(-1, 0), (1, 0), (0, -1), (0, 1),(-1,-1),(1,1),(1,-1),(-1,1)]:
+                                                                                if li[(each[0] + ax, each[1] + ay)]==1:
+                                                                                        li[(each[0] + ax, each[1] + ay)]=4
+                                                                break
+                                                        else:
                                                 
-                                                masage = tk.Label(window2, text="Enemy hit you").grid(row=1,column=0)
-                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                                button.grid(row=2,column=0)
-
-                                        else:
-                                        
-                                                my_shp.remove(shi)
-                                                hit_list.clear()
-                                                hit_iter=0
-                                                hitted=False
-                                                '''#usuawanie otoczenia
-                                                for each in broken:
-                                                        if li[(each[0]+dx,each[1]+dy)for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]!=
-                                                        li[]=4
-                                                '''
-                                                masage = tk.Label(window2, text="Enemy hit you and shunken").grid(row=1,column=0)
-                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                                button.grid(row=2,column=0)
-                                        li[point]=3
-
-                                        for a in li:
-                                                color=['white','grey','green','red','blue']
-                                                x_square = a[1] * square_size
-                                                y_square = a[0] * square_size
-                                                figure=self.canvas.create_rectangle(
-                                                                        y_square,
-                                                                        x_square,
-                                                                        y_square + square_size,
-                                                                        x_square + square_size,
-                                                                        fill=color[li[a]], outline='gray5')
-                                        for t in index:
-                                                self.move=(t*square_size)+(square_size/2)
-                                                self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
-                                                self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
-                                        if len(my_shp)==0:
-                                                masage = tk.Label(window2, text="Enemy win the game").grid(row=1,column=0)
-                                                button = tk.Button(window2, text="End",command=lambda:[root.destroy()])
-                                                button.grid(row=2,column=0)
-                                        
-
-                                else:
-                                        
-                                        li[point]=4
-                                        if point in hit_list:
-                                                hit_list.remove(point)
+                                                                masage = tk.Label(window2, text="Enemy hit you").grid(row=1,column=0)
+                                                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                                                button.grid(row=2,column=0)
+                                                                break
+                                for a in li:
+                                        color=['white','grey','green','red','blue']
+                                        x_square = a[1] * square_size
+                                        y_square = a[0] * square_size
+                                        figure=self.canvas.create_rectangle(
+                                                                y_square,
+                                                                x_square,
+                                                                y_square + square_size,
+                                                                x_square + square_size,
+                                                                fill=color[li[a]], outline='gray5')
+                                for t in index:
+                                        self.move=(t*square_size)+(square_size/2)
+                                        self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                        self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
+                        else:
+                                                                        
+                                li[point]=4
+                                if point in hit_list:
+                                        hit_list.remove(point)
                         
-                                        for a in li:
-                                                color=['white','grey','green','red','blue']
-                                                x_square = a[1] * square_size
-                                                y_square = a[0] * square_size
-                                                figure=self.canvas.create_rectangle(
-                                                                        y_square,
-                                                                        x_square,
-                                                                        y_square + square_size,
-                                                                        x_square + square_size,
-                                                                        fill=color[li[a]], outline='gray5')
-                                        for t in index:
-                                                self.move=(t*square_size)+(square_size/2)
-                                                self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
-                                                self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
-                                        masage = tk.Label(window2, text="Enemy missed you").grid(row=1,column=0)
-                                        button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
-                                        button.grid(row=2,column=0)
-                                        
-                       
-                        
+                                for a in li:
+                                        color=['white','grey','green','red','blue']
+                                        x_square = a[1] * square_size
+                                        y_square = a[0] * square_size
+                                        figure=self.canvas.create_rectangle(
+                                                                y_square,
+                                                                x_square,
+                                                                y_square + square_size,
+                                                                x_square + square_size,
+                                                                fill=color[li[a]], outline='gray5')
+                                for t in index:
+                                        self.move=(t*square_size)+(square_size/2)
+                                        self.canvas.create_text(self.move, (square_size/2), text=index[t], fill="black")
+                                        self.canvas.create_text((square_size/2), self.move, text=t, fill="black")
+                                masage = tk.Label(window2, text="Enemy missed you").grid(row=1,column=0)
+                                button = tk.Button(window2, text="Next turn",command=lambda:window2.destroy())
+                                button.grid(row=2,column=0)      
                 else:
                         
                         shoot_first=random.choice(all_map_enemy)
@@ -567,6 +559,12 @@ class Gui():
                                 neighbors = [(shoot_first[0] + dx, shoot_first[1] + dy) for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]
                                 hit_list=[n for n in neighbors if 0 < n[0] < 11 and 0 < n[1] < 11]
                                 li[shoot_first]=3
+                                for ship_num in range(len(my_shp)):
+                                        if shoot_first in my_shp[ship_num]:
+                                                        ship=my_shp[ship_num]
+                                                        ship.remove(shoot_first)
+                                                        my_shp[ship_num]=ship
+                                                        break
                                 for a in li:
                                                 color=['white','grey','green','red','blue']
                                                 x_square = a[1] * square_size
