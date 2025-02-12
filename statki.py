@@ -503,6 +503,7 @@ class Gui():
                                                                         for ax,ay in [(-1, 0), (1, 0), (0, -1), (0, 1),(-1,-1),(1,1),(1,-1),(-1,1)]:
                                                                                 if li[(each[0] + ax, each[1] + ay)]==1:
                                                                                         li[(each[0] + ax, each[1] + ay)]=4
+                                                                                        all_map_enemy.remove((each[0] + ax, each[1] + ay))
                                                                 break
                                                         else:
                                                 
